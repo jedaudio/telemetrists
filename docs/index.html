@@ -12,7 +12,7 @@
             --accent: #A6632A;  
             --glitch-red: rgba(255, 40, 40, 0.35);
             --glitch-blue: rgba(40, 255, 255, 0.25);
-            --header-h: 70px;
+            --header-h: 120px; /* Increased height to allow for a longer gradient throw */
         }
 
         body {
@@ -23,6 +23,32 @@
             font-weight: 200; 
             overflow-x: hidden;
             width: 100%;
+        }
+
+        /* --- GLOBAL FRICTION LAYER --- */
+        .friction-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: url('./Copper Canvas.jpg') no-repeat center center;
+            background-size: cover;
+            z-index: 90; 
+            pointer-events: none; 
+            opacity: 0.20; 
+            mix-blend-mode: multiply;
+        }
+
+        /* --- CINEMATIC VIGNETTE --- */
+        .page-vignette {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(circle at center, 
+                rgba(15, 15, 15, 0) 0%, 
+                rgba(15, 15, 15, 0.2) 60%, 
+                rgba(166, 99, 42, 0.3) 100%);
+            z-index: 85;
+            pointer-events: none;
         }
 
         /* --- CRT/SCANLINE OVERLAY --- */
@@ -38,36 +64,27 @@
             pointer-events: none;
         }
 
+        /* --- GRADIENT HEADER (MIRRORS FOOTER LOGIC) --- */
         header {
             position: fixed; 
             top: 0; left: 0;
             width: 100%;
             height: var(--header-h);
-            z-index: 90;
+            z-index: 95;
             padding: 0 30px;
-            background: rgba(15, 15, 15, 0.95);
-            backdrop-filter: blur(8px);
-            border-bottom: 1px solid rgba(228, 217, 206, 0.1);
+            /* Matches footer transparency logic: Solid-ish at top, fades to 0 at bottom */
+            background: linear-gradient(to bottom, 
+                rgba(15, 15, 15, 0.85) 0%, 
+                rgba(15, 15, 15, 0.8) 40%, 
+                rgba(15, 15, 15, 0) 100%);
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start; /* Align items to top since header is taller */
+            padding-top: 25px; 
             box-sizing: border-box;
             font-size: 1.2rem;
             text-transform: uppercase;
             letter-spacing: 3px;
-        }
-
-        .top-shroud {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%;
-            height: 14vh; 
-            background: linear-gradient(to bottom, 
-                rgba(15, 15, 15, 1) 0%, 
-                rgba(15, 15, 15, 0.8) 40%, 
-                rgba(15, 15, 15, 0) 100%);
-            z-index: 40;
-            pointer-events: none;
         }
 
         #menu-toggle { display: none; }
@@ -78,8 +95,8 @@
             flex-direction: column;
             gap: 6px;
             z-index: 95;
-            padding: 10px 0;
-            margin-left: 20px; /* Space from icons */
+            padding: 5px 0;
+            margin-left: 20px;
         }
 
         .hamburger span {
@@ -94,18 +111,16 @@
         #menu-toggle:checked ~ header .hamburger span:nth-child(2) { opacity: 0; }
         #menu-toggle:checked ~ header .hamburger span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-        /* --- SOCIAL TRAY (NOW INSIDE HEADER) --- */
         .social-tray {
             display: flex;
             align-items: center;
             gap: 20px;
-            opacity: 0; /* Hidden by default */
+            opacity: 0;
             transform: translateX(10px);
             transition: all 0.4s ease;
             pointer-events: none;
         }
 
-        /* Show when checkbox is checked */
         #menu-toggle:checked ~ header .social-tray {
             opacity: 1;
             transform: translateX(0);
@@ -126,9 +141,14 @@
             align-items: center;
         }
 
-        /* --- HERO & CONTENT --- */
         .hero-container { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: -1; }
-        .hero-image { width: 100%; height: 100%; background: url('./home-image.png') no-repeat center center; background-size: cover; filter: brightness(0.8); }
+        .hero-image { 
+            width: 100%; 
+            height: 100%; 
+            background: url('./home-image.png') no-repeat center center;
+            background-size: cover; 
+            filter: brightness(0.8); 
+        }
 
         .content {
             position: relative;
@@ -138,8 +158,8 @@
             z-index: 2;
             background: linear-gradient(to bottom, 
                 rgba(15, 15, 15, 0) 0%, 
-                rgba(15, 15, 15, 0.9) 15%, 
-                rgba(15, 15, 15, 1) 40%);
+                rgba(15, 15, 15, 0.8) 15%, 
+                rgba(15, 15, 15, 0.85) 40%);
         }
 
         h1 { font-weight: 200; font-size: 3.5rem; letter-spacing: 18px; margin: 0; text-shadow: 1.5px 0 var(--glitch-red), -1.5px 0 var(--glitch-blue); animation: electricalPulse 6s infinite; }
@@ -151,22 +171,20 @@
 
         .internal-footer { margin-top: 80px; font-size: 0.55rem; letter-spacing: 3px; opacity: 0.2; }
 
-        /* --- MOBILE REFINEMENT --- */
         @media (max-width: 768px) {
-            :root { --header-h: 60px; }
-            header { padding: 0 15px; }
+            :root { --header-h: 100px; }
+            header { padding: 20px 15px 0 15px; }
             h1 { font-size: 1.6rem; letter-spacing: 6px; }
-            .social-tray { gap: 12px; }
-            .social-tray svg { width: 16px; height: 16px; }
             .content { margin-top: 65vh; }
         }
     </style>
 </head>
 <body>
 
-<input type="checkbox" id="menu-toggle">
+<div class="friction-overlay"></div>
+<div class="page-vignette"></div>
 
-<div class="top-shroud"></div>
+<input type="checkbox" id="menu-toggle">
 
 <header>
     <span>[ T ]</span>
@@ -177,7 +195,7 @@
             <a href="https://tiktok.com/@telemetrists.band" target="_blank"><svg viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.17-2.89-.6-4.09-1.47-.88-.64-1.6-1.47-2.12-2.44v9.39c.01 2-.4 4.1-1.85 5.46-1.37 1.28-3.35 1.73-5.17 1.46-2.03-.3-3.75-1.75-4.5-3.6-.45-1.12-.45-2.38-.21-3.54.44-2.08 2.12-3.84 4.1-4.37.58-.15 1.18-.22 1.78-.22.12 0 .24 0 .36.01v4.27c-.26-.06-.53-.08-.8-.07-1.07.03-2.13.71-2.46 1.74-.35.92-.09 2.1.66 2.73.53.48 1.3.74 2.01.66.97-.07 1.83-.75 2.05-1.7.06-.27.07-.55.07-.82V0l.01.02z"/></svg></a>
             <a href="https://youtube.com/@telemetrists" target="_blank"><svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a>
             <a href="https://telemetrists.bandcamp.com" target="_blank"><svg viewBox="0 0 24 24"><path d="M0 18.75l7.437-13.5H24l-7.438 13.5H0z"/></svg></a>
-            <a href="https://soundcloud.com/telemetrists" target="_blank"><svg viewBox="0 0 24 24"><path d="M11.56 8.87c0-.04 0-.07-.01-.11.01-.03.01-.07.01-.11 0-1.12-.9-2.03-2.02-2.03-.04 0-.08 0-.12.01-.48-2.22-2.44-3.9-4.79-3.9-1.92 0-3.6 1.13-4.39 2.76C.1 5.64 0 5.88 0 6.13c0 .26.11.51.27.71.79 1.63 2.47 2.76 4.39 2.76.04 0 .08 0 .12.01.03-.13.04-.26.04-.39 0-1.12.91-2.02 2.02-2.02s2.03.9 2.03 2.02c0 .13-.01.26-.04.39.04 0 .08-.01.12-.01 1.12 0 2.03.91 2.03 2.03s-.91 2.02-2.03 2.02c-.04 0-.08 0-.12-.01-.01.04-.01.08-.01.12 0 1.12.91 2.03 2.03 2.03 1.12 0 2.02-.91 2.02-2.03 0-.04 0-.08-.01-.12.01 0 .01-.01.02-.01 2.35 0 4.31-1.68 4.79-3.9.04-.01.08-.01.12-.01 1.12 0 2.02.9 2.02 2.02 0 .13-.01.26-.04.39.04 0 .08.01.12.01 1.92 0 3.6-1.13 4.39-2.76.16-.2.27-.45.27-.71 0-.25-.11-.49-.24-.64-.79-1.63-2.47-2.76-4.39-2.76-.04 0-.08 0-.12-.01-.03.13-.04.26-.04.39 0 1.12-.91 2.02-2.03 2.02s-2.03-.9-2.03-2.02c0-.13.01-.26.04-.39-.04 0-.08.01-.12.01zM24 12.56c0 1.9-1.54 3.44-3.44 3.44h-17.12c-1.9 0-3.44-1.54-3.44-3.44s1.54-3.44 3.44-3.44h17.12c1.9 0 3.44 1.54 3.44 3.44z"/></svg></a>
+            <a href="https://soundcloud.com/telemetrists" target="_blank"><svg viewBox="0 0 24 24"><path d="M11.56 8.87c0-.04 0-.07-.01-.11.01-.03.01-.07.01-.11 0-1.12-.9-2.03-2.02-2.03-.04 0-.08 0-.12.01-.48-2.22-2.44-3.9-4.79-3.9-1.92 0-3.6 1.13-4.39 2.76C.1 5.64 0 5.88 0 6.13c0 .26.11.51.27.71.79 1.63 2.47 2.76 4.39 2.76.04 0 .08 0 .12.01.03-.13.04-.26.04-.39 0-1.12.91-2.02 2.02-2.02s2.03.9 2.03 2.02c0 .13-.01.26-.04.39.04 0 .08-.01.12-.01 1.12 0 2.03.91 2.03 2.03s-.91 2.02-2.03 2.02c-.04 0-.08 0-.12-.01-.01.04-.01.08-.01.12 0 1.12.91 2.03 2.03 2.03 1.12 0 2.02-.91 2.02-2.03 0-.04 0-.08-.01-.12.01 0 .01-.01.02-.01 2.35 0 4.31-1.68 4.79-3.9.04-.01.08-.01.12-.01 1.12 0 2.02.9 2.02 2.02 0 .13-.01.26-.04.39.04 0 .08.01.12.01 1.92 0 3.6-1.13 4.39-2.76.16-.2.27-.45.27-.71 0-.25-.11-.49-.24-.64-.79-1.63-2.47-2.76-4.39-2.76-.04 0-.08 0-.12-.01-.03.13-.04.26-.04.39 0 1.12-.91 2.02-2.03 2.02s-2.03-.9-2.03-2.02c0-.13.01-.26.04-.39-.04 0-.08 0-.12.01zM24 12.56c0 1.9-1.54 3.44-3.44 3.44h-17.12c-1.9 0-3.44-1.54-3.44-3.44s1.54-3.44 3.44-3.44h17.12c1.9 0 3.44 1.54 3.44 3.44z"/></svg></a>
         </div>
 
         <label for="menu-toggle" class="hamburger">
